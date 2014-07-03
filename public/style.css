@@ -13,3 +13,7 @@ nav {
 
 .col-md-3 {
   padding: 0, 5px; }
+
+.form-control {
+  width: 50%;
+  display: inline; }

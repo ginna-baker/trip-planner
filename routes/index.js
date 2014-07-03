@@ -1,17 +1,16 @@
 var express = require('express');
 var router = express.Router();
-var mongo = require('mongo');
 var models = require('../models');
 
 router.get('/', [
   function(req,res,next) {
-    models.Hotel.find(function(err,hotels) {
+    models.Hotels.find(function(err,hotels) {
       req.hotels = hotels;
       next();
     });
   },
   function(req,res,next) {
-    models.Restaurant.find(function(err,restaurants) {
+    models.Restaurants.find(function(err,restaurants) {
       req.restaurants = restaurants;
       next();
     });

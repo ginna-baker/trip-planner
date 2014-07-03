@@ -3,7 +3,7 @@ mongoose.connect('mongodb://localhost/tripplanner');
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'mongodb connection error:'));
 
-var Place, Hotel, ThingsToDo, Restaurant;
+var Place, Hotels, ThingsToDo, Restaurants;
 var Schema = mongoose.Schema;
 
 var placeSchema = new Schema({
@@ -14,20 +14,20 @@ var placeSchema = new Schema({
   location: [Number, Number]// mongoose geospatial, long and lat
 });
 
-var hotelSchema = new Schema({
+var hotelsSchema = new Schema({
   name: String,
   place: [placeSchema],
   num_stars: Number, //1-5
   amenities: String //comma delimited list
 });
 
-var thingsToDoSchema = new Schema({
+var thingstodoSchema = new Schema({
   name: String,
   place: [placeSchema],
   age_range: String //(data-type string)
 })
 
-var restaurantSchema = new Schema({
+var restaurantsSchema = new Schema({
   name: String,
   place: [placeSchema],
   cuisine: String,
@@ -43,8 +43,8 @@ var restaurantSchema = new Schema({
 // });
 
 Place = mongoose.model('Place', placeSchema);
-Hotel = mongoose.model('Hotel', hotelSchema);
-ThingsToDo = mongoose.model('ThingsToDo', thingsToDoSchema);
-Restaurant = mongoose.model('Restaurant', restaurantSchema);
+Hotels = mongoose.model('Hotels', hotelsSchema);
+ThingsToDo = mongoose.model('ThingsToDo', thingstodoSchema);
+Restaurants = mongoose.model('Restaurants', restaurantsSchema);
 
-module.exports = {"Place": Place, "Hotel": Hotel, "ThingsToDo": ThingsToDo, "Restaurant": Restaurant};
+module.exports = {"Place": Place, "Hotels": Hotels, "ThingsToDo": ThingsToDo, "Restaurants": Restaurants};
