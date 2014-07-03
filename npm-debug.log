@@ -1,0 +1,67 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'node', '/usr/local/bin/npm', 'install', 'seed.js' ]
+2 info using npm@1.3.11
+3 info using node@v0.10.21
+4 warn package.json mongo@0.1.0 No repository field.
+5 warn package.json sass@0.5.0 No repository field.
+6 verbose readDependencies using package.json deps
+7 verbose cache add [ 'seed.js', null ]
+8 verbose cache add name=undefined spec="seed.js" args=["seed.js",null]
+9 verbose parsed url { protocol: null,
+9 verbose parsed url   slashes: null,
+9 verbose parsed url   auth: null,
+9 verbose parsed url   host: null,
+9 verbose parsed url   port: null,
+9 verbose parsed url   hostname: null,
+9 verbose parsed url   hash: null,
+9 verbose parsed url   search: null,
+9 verbose parsed url   query: null,
+9 verbose parsed url   pathname: 'seed.js',
+9 verbose parsed url   path: 'seed.js',
+9 verbose parsed url   href: 'seed.js' }
+10 silly lockFile 23411494-seed-js seed.js
+11 verbose lock seed.js /Users/ginna/.npm/23411494-seed-js.lock
+12 silly lockFile 23411494-seed-js seed.js
+13 silly lockFile 23411494-seed-js seed.js
+14 verbose addNamed [ 'seed.js', '' ]
+15 verbose addNamed [ null, '*' ]
+16 silly lockFile ebc5ac25-seed-js seed.js@
+17 verbose lock seed.js@ /Users/ginna/.npm/ebc5ac25-seed-js.lock
+18 silly addNameRange { name: 'seed.js', range: '*', hasData: false }
+19 verbose url raw seed.js
+20 verbose url resolving [ 'https://registry.npmjs.org/', './seed.js' ]
+21 verbose url resolved https://registry.npmjs.org/seed.js
+22 info trying registry request attempt 1 at 21:03:44
+23 http GET https://registry.npmjs.org/seed.js
+24 http 404 https://registry.npmjs.org/seed.js
+25 silly registry.get cb [ 404,
+25 silly registry.get   { date: 'Thu, 03 Jul 2014 01:03:45 GMT',
+25 silly registry.get     server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+25 silly registry.get     'content-type': 'application/json',
+25 silly registry.get     'cache-control': 'max-age=0',
+25 silly registry.get     'content-length': '52',
+25 silly registry.get     'accept-ranges': 'bytes',
+25 silly registry.get     via: '1.1 varnish',
+25 silly registry.get     age: '0',
+25 silly registry.get     'x-served-by': 'cache-jfk1028-JFK',
+25 silly registry.get     'x-cache': 'MISS',
+25 silly registry.get     'x-cache-hits': '0',
+25 silly registry.get     'x-timer': 'S1404349425.777825,VS0,VE88',
+25 silly registry.get     'keep-alive': 'timeout=10, max=50',
+25 silly registry.get     connection: 'Keep-Alive' } ]
+26 silly lockFile ebc5ac25-seed-js seed.js@
+27 silly lockFile ebc5ac25-seed-js seed.js@
+28 error 404 'seed.js' is not in the npm registry.
+28 error 404 You should bug the author to publish it
+28 error 404
+28 error 404 Maybe try 'npm search seed'
+28 error 404
+28 error 404 Note that you can also install from a
+28 error 404 tarball, folder, or http url, or git url.
+29 error System Darwin 12.5.0
+30 error command "node" "/usr/local/bin/npm" "install" "seed.js"
+31 error cwd /Users/ginna/Desktop/FullStack/tripplanner
+32 error node -v v0.10.21
+33 error npm -v 1.3.11
+34 error code E404
+35 verbose exit [ 1, true ]

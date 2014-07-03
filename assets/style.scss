@@ -1,0 +1,24 @@
+.container-fluid {
+  margin-top: 60px;
+  margin-left: 20px;
+}
+
+#map-canvas {
+  margin-top: 60px;
+  min-height: 500px;
+  max-width: 900px;
+  position: center;
+}
+
+nav {
+  clear: both;
+}
+
+.col-md-3 {
+  padding: 0, 5px;
+}
+
+.form-control {
+  width: 50%;
+  display: inline;
+}
