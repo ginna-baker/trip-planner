@@ -1,0 +1,147 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+ <div class="row">
+    <div class="col-md-3" id="daysContainer">
+      <button type="button" class="btn btn-default" id="dayBtn">Day 1</button>
+      <button type="button" class="btn btn-default" id="dayBtn">Day 2</button>
+      <button type="button" class="btn btn-default" id="dayBtn">Day 3</button>
+      <button type="button" class="btn btn-default" id="dayBtn">+ Add Day</button>
+    </div>
+
+
+    <div class="col-md-3">
+      <select id="hotels-select">
+          <h3>Hotels</h3>
+          <button type="button" class="btn btn-default">Hotels</button>
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            <select id="hotel-select"></select>
+            <span class="caret"></span>
+            <span class="sr-only">Toggle Dropdown</span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+          </ul>
+          <button type="button" class="btn btn-primary" id="hAdd">Add</button>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <select id="thingsToDo-select">
+          <h3>Things to Do</h3>
+          <button type="button" class="btn btn-default">Things to Do</button>
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            <select id="t-select"></select>
+            <span class="caret"></span>
+            <span class="sr-only">Toggle Dropdown</span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+          </ul>
+          <button type="button" class="btn btn-primary" id="ttdAdd">Add</button>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <select id="restaurants-select">
+            <h3>Restaurants</h3>
+            <button type="button" class="btn btn-default">Restaurants</button>
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+              <select id="r-select"></select>
+              <span class="caret"></span>
+              <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="#">Action</a></li>
+              <li><a href="#">Another action</a></li>
+              <li><a href="#">Something else here</a></li>
+              <li class="divider"></li>
+              <li><a href="#">Separated link</a></li>
+            </ul>
+            <button type="button" class="btn btn-primary" id= "restAdd">Add</button>
+        </select>
+        </div>
+
+  </div><!-- end row -->
+
+  <div class="row">
+    <div class="col-md-3" id="day-panel">Plan for the day!</div>
+    <div class="col-md-9" id="map-canvas">map</div>
+  </div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+
+{% autoescape false %}
+var all_hotels = {{ hotels | json }};
+var all_restaurants = {{ restaurants | json }};
+var all_things_to_do = {{ things_to_do | json }};
+{% endautoescape %}
+
+var selectors = {
+    hotels: $("#hotels-select"),
+    thingsToDo: $("#thingsToDo-select"),
+    restaurants: $("#restaurants-select")
+  }
+
+  var days = [];
+  var currentDay;
+  var $daysContainer = $("#daysContainer");
+  var $dayPanel = $('#day-panel');
+
+  var addDay = function() {
+    var dayObj = {
+      number:days.length+1,
+      hotels:[],
+      restaurants:[],
+      thingsToDo:[]
+    };
+
+    days.push(dayObj);
+    $daysContainer.append("<button data-num='" + dayObj.number + "' id='dayBtn" + dayObj.number + "'>Day " + dayObj.number + "</button>");
+    $("#dayBtn" + dayObj.number).on('click',function() {
+      var dataNum = $(this).attr('data-num');
+      var day = days[dataNum-1];
+      $dayPanel.html(JSON.stringify(day));
+      currentDay = day;
+
+    })
+  }
+
+  addDay();
+
+
+
+  var initSelectors = function() {
+    var optionFactory = function(obj) {
+      return "<option value='" + obj._id + "'>" + obj.name + "</option>";
+    };
+
+    var selectAppender = function($select,obj) {
+      $select.append(optionFactory(obj))
+    };
+
+    for(var type in data) {
+      if(data.hasOwnProperty(type)) {
+        data[type].forEach(function(obj) {
+          selectAppender(selectors[type],obj);
+        })
+      }
+    }
+  };
+
+initSelectors();
+</script>
+{% endblock %}
+
