@@ -7,7 +7,6 @@
       <button type="button" class="btn btn-success" id="dayBtn">+ Add Day</button>
     </div>
 
-
     <div class="col-md-3">
           <h3>Hotels</h3>
           <select id="h-select" class="form-control">
@@ -33,7 +32,7 @@
           <ul class="dropdown-menu" role="menu">
 
           </ul>
-          <button type="button" class="btn btn-primary add-place" id="ttdAdd" data-place="thingstodo" >Add</button>
+          <button type="button" class="btn btn-primary add-place" id="ttdAdd" data-place="thingsToDo" >Add</button>
     </div>
 
     <div class="col-md-3">
@@ -68,28 +67,28 @@
 
 {% autoescape false %}
 var data = {
-  hotels: {{ hotels | json}},
-  thingstodo: {{ thingsToDo | json}},
-  restaurants: {{ restaurants | json}}
+  Hotels: {{ Hotels | json}},
+  ThingsToDo: {{ ThingsToDo | json}},
+  Restaurants: {{ Restaurants | json}}
 };
 
 //find object instead of just restaurant id.  Revisit - What is [type]?
 
 var findById = function(type, id) {
   for (var i=0; i<data[type].length; i++) {
-    if data[type][i]._id === id {
+    if (data[type][i]._id === id) {
       return data[type][i];
     }
   }
-}
+};
 
 {% endautoescape %}
 
 var selectors = {
     hotels: $("#h-select"),
-    thingstodo: $("#t-select"),
+    thingsToDo: $("#t-select"),
     restaurants: $("#r-select")
-  }
+  };
 
 var days = [];
 var currentDay;
@@ -105,58 +104,55 @@ var addDay = function() {
   };
 
 days.push(dayObj);
-  $daysContainer.append("<button data-num= '" + dayObj.number + "' class='btn btn-success' id='days" + dayObj.number + "'>Day " + dayObj.number + "</button>");
-  $("#dayBtn" + dayObj.number).on('click',function() {
+
+$daysContainer.append("<button data-num= '" + dayObj.number + "' class='btn btn-success' id='days" + dayObj.number + "'>Day " + dayObj.number + "</button>");
+
+$("#dayBtn" + dayObj.number).on('click',function() {
     $(this).addClass('active');
     var dataNum = $(this).attr('data-num');
    var day = days[dataNum-1];
-  // $dayPanel.html(JSON.stringify(day));
     currentDay = day;
     rerender(day);
-})
-}
+});
+};
 
-  addDay();
-
+//Putting in Day 1 here to start the user out
+addDay();
+// User can then add buttons using 'Add'
   $("#dayBtn").on('click',function() {
     addDay();
-  })
+  });
 
-//make add activities work
+//make add selector activities work
 $('.add-place').on('click', function(){ var place = (this).attr('data-place');
   var selector = selectors[place];
   var id = selector.val;
-  if typeof(currentDay != 'undefined') {
+  if (typeof(currentDay) != 'undefined') {
     currentDay[place].push(findById(place, id))
-    }
-})
-
-
-
-
-    // $('#itin').append("<li data-num= " + currentDay.number + ">"  + "</li>");
-    // currentDay.hotels.push(selectors.hotels.val());
-  })
-
-// currentDay.hotels = data.hotels[]
-
-// get hotel Latlng, used further below
-var hotelNum = function () {
-for (var i=0; i<15; i++) {
-  if (data.hotels[i]=currentDay.hotels) {
-  return i}
-}
-}
+    };
+});
 
 // latlng = data.hotels[hotelNum].place.location[num1, num2];
 
-var rerender = function (day){
-
-//may need to refine.  See Zeke's code
-  $('#daypanel').push(currentDay[place]);
-  $('#map-canvas').initialize_gmaps();
-//google maps load, show arrows for location lat and lon
+arrToUl = funtion (arr) {
+  var toReturn = "<ul>";
+  arr.forEach(function(el) {
+    toReturn += "<li>" + el + "</li>";
+  });
+  return toReturn + "</ul>";
 }
+
+var rerender = function (day){
+  var str = "<h3>Plan for day " + day.number + "</h3>";
+  str += "Hotels" + arrToUl(day.hotels);
+  str += "thingsToDo" + arrToUl(day.thingsToDo);
+  str += "Restaurants" + arrToUl(day.restaurants);
+  $('#daypanel').html(str);
+  $('#map-canvas').initialize_gmaps();
+};
+$('#days').on('click', function () {
+  rerender(currentDay);
+});
 
   var initSelectors = function() {
     var optionFactory = function(obj) {
@@ -164,45 +160,40 @@ var rerender = function (day){
     };
 
     var selectAppender = function($select,obj) {
-      $select.append(optionFactory(obj))
+      $select.append(optionFactory(obj));
     };
 
     for(var type in data) {
       if(data.hasOwnProperty(type)) {
-        console.log(data[type])
         data[type].forEach(function(obj) {
           selectAppender(selectors[type],obj);
-        })
+        });
       }
     }
   };
 
 initSelectors();
 
-function initialize_gmaps() {
+// GOOGLE MAPS CODE ------------------------------------------------//
 
+function initialize_gmaps() {
   // initialize new google maps LatLng object
   var myLatlng = new google.maps.LatLng(40.705786,-74.007672);
-
   // set the map options hash
   var mapOptions = {
     center: myLatlng,
     zoom: 16,
     mapTypeId: google.maps.MapTypeId.ROADMAP
   };
-
   // get the maps div's HTML obj
   var map_canvas_obj = document.getElementById("map-canvas");
-
   // initialize a new Google Map with the options
   var map = new google.maps.Map(map_canvas_obj, mapOptions);
-
   // Add the marker to the map
   var marker = new google.maps.Marker({
     position: Latlng,
     title:"Look here"
   });
-
   // Add the marker to the map by calling setMap()
   marker.setMap(map);
 }

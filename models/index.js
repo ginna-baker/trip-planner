@@ -21,7 +21,7 @@ var hotelsSchema = new Schema({
   amenities: String //comma delimited list
 });
 
-var thingstodoSchema = new Schema({
+var thingsToDoSchema = new Schema({
   name: String,
   place: [placeSchema],
   age_range: String //(data-type string)
@@ -44,7 +44,7 @@ var restaurantsSchema = new Schema({
 
 Place = mongoose.model('Place', placeSchema);
 Hotels = mongoose.model('Hotels', hotelsSchema);
-ThingsToDo = mongoose.model('ThingsToDo', thingstodoSchema);
+ThingsToDo = mongoose.model('ThingsToDo', thingsToDoSchema);
 Restaurants = mongoose.model('Restaurants', restaurantsSchema);
 
 module.exports = {"Place": Place, "Hotels": Hotels, "ThingsToDo": ThingsToDo, "Restaurants": Restaurants};
