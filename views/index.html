@@ -64,16 +64,20 @@
 
 {% block js %}
 <script>
-
 {% autoescape false %}
 var data = {
-  Hotels: {{ Hotels | json}},
-  ThingsToDo: {{ ThingsToDo | json}},
-  Restaurants: {{ Restaurants | json}}
+  hotels: {{ hotels | json}},
+  thingsToDo: {{ thingsToDo | json}},
+  restaurants: {{ restaurants | json}}
 };
 
-//find object instead of just restaurant id.  Revisit - What is [type]?
+var selectors = {
+    hotels: $("#h-select"),
+    thingsToDo: $("#t-select"),
+    restaurants: $("#r-select")
+  };
 
+//find object instead of just restaurant id.
 var findById = function(type, id) {
   for (var i=0; i<data[type].length; i++) {
     if (data[type][i]._id === id) {
@@ -83,12 +87,6 @@ var findById = function(type, id) {
 };
 
 {% endautoescape %}
-
-var selectors = {
-    hotels: $("#h-select"),
-    thingsToDo: $("#t-select"),
-    restaurants: $("#r-select")
-  };
 
 var days = [];
 var currentDay;
@@ -105,7 +103,7 @@ var addDay = function() {
 
 days.push(dayObj);
 
-$daysContainer.append("<button data-num= '" + dayObj.number + "' class='btn btn-success' id='days" + dayObj.number + "'>Day " + dayObj.number + "</button>");
+$("#daysContainer").append("<button data-num= '" + dayObj.number + "' class='btn btn-success' id='days" + dayObj.number + "'>Day " + dayObj.number + "</button>");
 
 $("#dayBtn" + dayObj.number).on('click',function() {
     $(this).addClass('active');
@@ -124,53 +122,80 @@ addDay();
   });
 
 //make add selector activities work
-$('.add-place').on('click', function(){ var place = (this).attr('data-place');
+$('.add-place').on('click', function(){
+  var place = (this).attr('data-place');
+// why do we need this line?
   var selector = selectors[place];
+  //revisit what selector.val would be
   var id = selector.val;
   if (typeof(currentDay) != 'undefined') {
-    currentDay[place].push(findById(place, id))
-    };
+    currentDay[place].push(findById(place, id));
+    }
 });
 
 // latlng = data.hotels[hotelNum].place.location[num1, num2];
 
-arrToUl = funtion (arr) {
+arrToUl = function (arr) {
   var toReturn = "<ul>";
   arr.forEach(function(el) {
     toReturn += "<li>" + el + "</li>";
   });
   return toReturn + "</ul>";
+};
+
+var getLocationsForDay = function(day) {
+    var locations = [];
+    ['hotels', 'thingsToDo', 'restaurants'].forEach(function(type) {
+      day[type].forEach(function(activity) {
+        locations.push(activity.place[0]location)
+        });
+    });
+    return locations
 }
+
+var maps;
+
+var setMarkers = function(locations) {
+//revisit: how does this line work?
+  locations.forEach(function(location) {
+    new google.maps.Marker({
+    position: new google.maps.LatLng(location[0], location[1])
+      }).setMap(map)
+  });
+};
 
 var rerender = function (day){
   var str = "<h3>Plan for day " + day.number + "</h3>";
-  str += "Hotels" + arrToUl(day.hotels);
+  str += "hotels" + arrToUl(day.hotels);
   str += "thingsToDo" + arrToUl(day.thingsToDo);
-  str += "Restaurants" + arrToUl(day.restaurants);
+  str += "restaurants" + arrToUl(day.restaurants);
   $('#daypanel').html(str);
   $('#map-canvas').initialize_gmaps();
+  setMarkers(getLocationsForDay());
 };
 $('#days').on('click', function () {
   rerender(currentDay);
 });
 
-  var initSelectors = function() {
-    var optionFactory = function(obj) {
-      return "<option value='" + obj._id + "'>" + obj.name + "</option>";
-    };
+//making menus work------------------------------
 
-    var selectAppender = function($select,obj) {
-      $select.append(optionFactory(obj));
-    };
-
-    for(var type in data) {
-      if(data.hasOwnProperty(type)) {
-        data[type].forEach(function(obj) {
-          selectAppender(selectors[type],obj);
-        });
-      }
-    }
+var initSelectors = function() {
+  var optionFactory = function(obj) {
+    return "<option value='" + obj._id + "'>" + obj.name + "</option>";
   };
+
+  var selectAppender = function($select, obj) {
+    $select.append(optionFactory(obj));
+  };
+
+  for(var type in data) {
+    if(data.hasOwnProperty(type)) {
+      data[type].forEach(function(obj) {
+        selectAppender(selectors[type],obj);
+      });
+    }
+  }
+};
 
 initSelectors();
 
@@ -191,7 +216,7 @@ function initialize_gmaps() {
   var map = new google.maps.Map(map_canvas_obj, mapOptions);
   // Add the marker to the map
   var marker = new google.maps.Marker({
-    position: Latlng,
+    position: LatLng,
     title:"Look here"
   });
   // Add the marker to the map by calling setMap()
