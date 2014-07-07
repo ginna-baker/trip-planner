@@ -88,30 +88,36 @@ var findById = function(type, id) {
 
 {% endautoescape %}
 
-var days = [];
-var currentDay;
+var app = new Object {
+  currentDay: [],
+}
+
+var Day = function() {
+    this.days = [],
+    this.number = this.days.length+1,
+    this.hotels = [],
+    this.restaurants = [],
+    this.thingsToDo = [],
+};
+
+Day.prototype.addActivity = function(type,id) {
+};
+
 var $daysContainer = $("#daysContainer");
 var $dayPanel = $('#day-panel');
 
 var addDay = function() {
-  var dayObj = {
-    number:days.length+1,
-    hotels:[],
-    restaurants:[],
-    thingsToDo:[]
-  };
+  days.push(Day);
 
-days.push(dayObj);
+  $("#daysContainer").append("<button data-num= '" + Day.number + "' class='btn btn-success' id='days" + Day.number + "'>Day " + Day.number + "</button>");
 
-$("#daysContainer").append("<button data-num= '" + dayObj.number + "' class='btn btn-success' id='days" + dayObj.number + "'>Day " + dayObj.number + "</button>");
-
-$("#dayBtn" + dayObj.number).on('click',function() {
-    $(this).addClass('active');
-    var dataNum = $(this).attr('data-num');
-   var day = days[dataNum-1];
-    currentDay = day;
-    rerender(day);
-});
+  $("#dayBtn" + Day.number).on('click',function() {
+      $("#dayBtn").addClass('active');
+      var dataNum = $(this).attr('data-num');
+      var now = days[dataNum-1];
+      app.currentDay = now;
+      rerender(now);
+  });
 };
 
 //Putting in Day 1 here to start the user out
@@ -128,8 +134,9 @@ $('.add-place').on('click', function(){
   var selector = selectors[place];
   //revisit what selector.val would be
   var id = selector.val;
-  if (typeof(currentDay) != 'undefined') {
-    currentDay[place].push(findById(place, id));
+  if (typeof(app.currentDay) != 'undefined') {
+    app.currentDay[place].push(findById(place, id));
+    Day.prototype.addActivity.push(findById(place, id));
     }
 });
 
@@ -164,17 +171,17 @@ var setMarkers = function(locations) {
   });
 };
 
-var rerender = function (day){
-  var str = "<h3>Plan for day " + day.number + "</h3>";
-  str += "hotels" + arrToUl(day.hotels);
-  str += "thingsToDo" + arrToUl(day.thingsToDo);
-  str += "restaurants" + arrToUl(day.restaurants);
+var rerender = function (Day){
+  var str = "<h3>Plan for day " + Day.number + "</h3>";
+  str += "hotels" + arrToUl(Day.hotels);
+  str += "thingsToDo" + arrToUl(Day.thingsToDo);
+  str += "restaurants" + arrToUl(Day.restaurants);
   $('#daypanel').html(str);
   $('#map-canvas').initialize_gmaps();
   setMarkers(getLocationsForDay());
 };
 $('#days').on('click', function () {
-  rerender(currentDay);
+  rerender(Day.currentDay);
 });
 
 //making menus work------------------------------
@@ -215,12 +222,12 @@ function initialize_gmaps() {
   // initialize a new Google Map with the options
   var map = new google.maps.Map(map_canvas_obj, mapOptions);
   // Add the marker to the map
-  var marker = new google.maps.Marker({
-    position: LatLng,
-    title:"Look here"
-  });
-  // Add the marker to the map by calling setMap()
-  marker.setMap(map);
+  // var marker = new google.maps.Marker({
+  //   position: LatLng,
+  //   title:"Look here"
+  // });
+  // // Add the marker to the map by calling setMap()
+  // marker.setMap(map);
 }
 
 $(document).ready(function() {
