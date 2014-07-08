@@ -21,3 +21,10 @@ nav {
 span {
   height: 5px;
   width: 5px; }
+
+@font-face {
+  font-family: 'bootstrap-glyphicons';
+  src: url('//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css'); }
+
+.glyphicon {
+  font-family: 'bootstrap-glyphicons'; }

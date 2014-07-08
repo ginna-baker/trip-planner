@@ -23,6 +23,10 @@ router.post('/create', function(req, res) {
   });
 });
 
+router.post('/delete', function(req, res)
+  remove(req);
+  )
+
 //ADD ROUTE-------------------------------------------
 // router.get('/', function(req, res) {
 //   res.render('submit');
