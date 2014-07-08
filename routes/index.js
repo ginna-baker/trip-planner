@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var models = require('../models');
+var async = require("async");
+
 
 router.get('/', [
   function(req,res,next) {
@@ -25,5 +27,32 @@ router.get('/', [
     });
   }
 ]);
+
+
+//
+router.get('/day/:day', function(req, res) {
+  models.Visit.find({day_number: req.params.day}, function(err, visits) {
+    var docObject = {
+    "_attraction": req.body.attraction_id,
+    "attraction_type": req.body.attraction_type,
+    "day_number": req.body.day_number
+      };
+    res.json(visits);
+  });
+});
+
+async.each(visits,
+  function (visit, callback) {
+    visit.populate({
+      path: '_attraction',
+      match: {_id: visit._attraction} ,
+      model: visit.attraction_type
+    }, function(err, popVisit) {
+        console.log(popVisit);
+        }
+    });
+  };
+);
+
 
 module.exports = router;

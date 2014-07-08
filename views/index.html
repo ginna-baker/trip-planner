@@ -95,40 +95,37 @@
 
     // Add the marker to the map by calling setMap()
     // marker.setMap(map);
-  }
+  };
 
   mapInit();
-
 
   var selectors = {
     hotels: $("#hotel-select"),
     thingsToDo: $("#thingsToDo-select"),
     restaurants: $("#restaurants-select")
-  }
+  };
 
   var days = [];
   var currentDay;
   var $daysContainer = $("#daysContainer");
   var $dayPanel = $('#day-panel');
 
-  var arrToUl = function(arr) {
+  var arrToUl = function(arr,day) {
     arr.forEach(function(el) {
-      var toReturn = (<ul>);
-      var count = null;
-      count += 1;
-      toReturn.append("<li + 'id=count' >" + el.name + "</li>" + "</ul>" + "<form 'action'='/add/submit' 'method'='post'>" + "<button 'class'='btn-warning' 'id'='count'>" + Remove + "</button>" + "</form>");
+      var toReturn = "<ul>";
+      toReturn += "<li>" + el.name + "<span data-activity-id='" + el._id + "' data-day-num='" + day.number + "' class='visitDelete, glyphicon-remove'></span></li>";
     });
-    return toReturn
+    return toReturn + "</ul>";
+
   };
 
-  $('.btn-warning').on('click', function() {
-    var temp = $(this).attr("id");
-    $("li[id=temp]").hide;
-    $(this).hide;
-      // if ($('li').id === temp) {
-      // }
-      });
-  });
+  $('.visitDelete').on('click', function() {
+    for data-activity-id in data-day-num = day.number {
+      delete el;
+    }
+    writeVisitToServer(id, currentDay.number, place);
+    }
+});
 
   var Markers = new MarkerCollection();
 
@@ -146,7 +143,7 @@
       });
     });
     return locations;
-  }
+  };
 
   var DayPlanView = function(day) {
     this.day = day;
@@ -155,11 +152,11 @@
 
   DayPlanView.prototype.render = function() {
     var str = "<div><h3>Plan for day " + this.day.number + "</h3>";
-    str += "Hotels" + arrToUl(this.day.hotels);
-    str += "Restaurants" + arrToUl(this.day.restaurants);
-    str += "Things to do" + arrToUl(this.day.thingsToDo) + "</div>";
+    str += "Hotels" + arrToUl(this.day.hotels,this.day)
+    str += "Restaurants" + arrToUl(this.day.restaurants,this.day)
+    str += "Things to do" + arrToUl(this.day.thingsToDo,this.day)
     this.$el = $(str);
-  }
+  };
 
   var DayButtonView = function(day) {
     this.day = day;
@@ -176,7 +173,7 @@
       self.day.activate();
       currentDay = self.day;
     });
-  }
+  };
 
   var Day = function() {
     this.hotels = [];
@@ -191,8 +188,9 @@
     currentDay = this;
     this.dayPlanView.render();
     $dayPanel.html(this.dayPlanView.$el);
+    $dayPanel.append();
   }
-
+;
   Day.prototype.addActivity = function(type,id) {
 
   };
@@ -200,7 +198,7 @@
   var addDay = function() {
     var dayObj = new Day();
     days.push(dayObj);
-  }
+  };
 
   addDay();
 
@@ -208,7 +206,7 @@
     addDay();
   });
 
-var attraction_id, attraction_type, current_day;
+var attraction_id, attraction_type;
 
   //adding things with places
   $(".add-place").on('click',function() {
@@ -220,7 +218,7 @@ var attraction_id, attraction_type, current_day;
       Markers.place(activity.place[0].location);
       currentDay[place].push(activity);
       currentDay.activate();
-      writeVisitToServer(attraction_id, attraction_type, current_day);
+      writeVisitToServer(id, currentDay.number, place);
     }
   });
 
@@ -232,14 +230,14 @@ var attraction_id, attraction_type, current_day;
     };
 
     var selectAppender = function($select,obj) {
-      $select.append(optionFactory(obj))
+      $select.append(optionFactory(obj));
     };
 
     for(var type in data) {
       if(data.hasOwnProperty(type)) {
         data[type].forEach(function(obj) {
           selectAppender(selectors[type],obj);
-        })
+        });
       }
     }
   };

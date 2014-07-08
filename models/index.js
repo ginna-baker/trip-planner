@@ -42,7 +42,7 @@ var restaurantsSchema = new Schema({
 //   email: String
 // });
 var visitSchema = new Schema({
-  _attraction: Number,
+  _attraction: Schema.Types.ObjectId,
   attraction_type: String,
   day_number: Number
 })

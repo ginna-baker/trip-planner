@@ -23,7 +23,6 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
-app.use('/add', add_routes);
 app.use(
   sass.middleware({
     src: __dirname + '/assets', //where the sass files are

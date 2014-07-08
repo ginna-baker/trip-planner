@@ -17,3 +17,7 @@ nav {
 .form-control {
   width: 50%;
   display: inline; }
+
+span {
+  height: 5px;
+  width: 5px; }
