@@ -7,6 +7,8 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var visit = require('./routes/visit');
+
 var swig = require('swig');
 var app = express();
 var sass = require('node-sass');
@@ -14,13 +16,14 @@ var sass = require('node-sass');
 // view engine setup
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'html');
 app.engine('html', swig.renderFile);
+app.set('view engine', 'html');
 app.use(favicon());
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
+app.use('/add', add_routes);
 app.use(
   sass.middleware({
     src: __dirname + '/assets', //where the sass files are
@@ -33,6 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
+app.use('/visit', visit);
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {

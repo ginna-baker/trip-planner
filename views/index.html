@@ -1,239 +1,269 @@
 {% extends "layout.html" %}
 
 {% block content %}
-
- <div class="row">
-    <div class="col-md-3" id="daysContainer">
-      <button type="button" class="btn btn-success" id="dayBtn">+ Add Day</button>
-    </div>
-
-    <div class="col-md-3">
-          <h3>Hotels</h3>
-          <select id="h-select" class="form-control">
-          <button type="button" class="btn btn-default dropdown-toggle btn-lg" data-toggle="dropdown">
-            <span class="caret"></span>
-            <span class="sr-only">Toggle Dropdown</span>
-          </button>
-          </select>
-          <ul class="dropdown-menu" role="menu">
-
-          </ul>
-          <button type="button" class="btn btn-primary add-place" id="hAdd" data-place="hotels">Add</button>
-    </div>
-
-    <div class="col-md-3">
-          <h3>Things to Do</h3>
-          <select id="t-select" class="form-control">
-          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-            <span class="caret"></span>
-            <span class="sr-only">Toggle Dropdown</span>
-          </button>
-          </select>
-          <ul class="dropdown-menu" role="menu">
-
-          </ul>
-          <button type="button" class="btn btn-primary add-place" id="ttdAdd" data-place="thingsToDo" >Add</button>
-    </div>
-
-    <div class="col-md-3">
-            <h3>Restaurants</h3>
-            <select id="r-select" class="form-control">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-              <span class="caret"></span>
-              <span class="sr-only">Toggle Dropdown</span>
-            </button>
-            </select>
-            <ul class="dropdown-menu" role="menu">
-        <!--       //how to get things here// -->
-            </ul>
-            <button type="button" class="btn btn-primary add-place" id= "restAdd"
-            data-place="restaurants">Add</button>
-        </div>
-
-  </div><!-- end row -->
-
   <div class="row">
-    <div class="col-md-3" id="day-panel"><h3>Plan</h3>
-        <ul id="itin">
-        </ul>
+    <div class="col-md-3" id="daysContainer">
+      <button class="btn btn-success" id="addDay">+</button>
     </div>
-    <div class="col-md-9" id="map-canvas"><h3>Map</h3></div>
+    <div class="col-md-3">
+      <select class="form-control place-select" id="hotel-select"></select>
+      <button class="btn btn-success add-place" data-place="hotels">+</button>
+
+    </div>
+    <div class="col-md-3">
+      <select class="form-control place-select" id="thingsToDo-select"></select>
+      <button class="btn btn-success add-place" data-place="thingsToDo">+</button>
+
+    </div>
+    <div class="col-md-3">
+      <select class="form-control place-select" id="restaurants-select"></select>
+      <button class="btn btn-success add-place" data-place="restaurants">+</button>
+
+    </div>
   </div>
+  <div class="row">
+    <div class="col-md-3" id="day-panel"></div>
+    <div class="col-md-9">
+      <div id="map-canvas"></div>
+    </div>
+  </div>
+
 
 {% endblock %}
 
 {% block js %}
-<script>
-{% autoescape false %}
-var data = {
-  hotels: {{ hotels | json}},
-  thingsToDo: {{ thingsToDo | json}},
-  restaurants: {{ restaurants | json}}
-};
 
-var selectors = {
-    hotels: $("#h-select"),
-    thingsToDo: $("#t-select"),
-    restaurants: $("#r-select")
+
+
+  <script>
+  // var visit = new Visit({
+  //   attraction_id: {{_attraction | json}},
+  //   attraction_type: {{attraction_type | json}},
+  //   day_number: {{day_number | json}}
+  // });
+
+  var Data = function(bootstrap) {
+    for(key in bootstrap) {
+      if(bootstrap.hasOwnProperty(key)) {
+        this[key] = bootstrap[key];
+      }
+    }
   };
 
-//find object instead of just restaurant id.
-var findById = function(type, id) {
-  for (var i=0; i<data[type].length; i++) {
-    if (data[type][i]._id === id) {
-      return data[type][i];
+  Data.prototype.findById = function(type,id) {
+    for(var i = 0; i < this[type].length; i++) {
+      if(this[type][i]._id === id) {
+        return this[type][i];
+      }
     }
   }
-};
 
-{% endautoescape %}
+  {% autoescape false %}
 
-var app = new Object {
-  currentDay: [],
-}
-
-var Day = function() {
-    this.days = [],
-    this.number = this.days.length+1,
-    this.hotels = [],
-    this.restaurants = [],
-    this.thingsToDo = [],
-};
-
-Day.prototype.addActivity = function(type,id) {
-};
-
-var $daysContainer = $("#daysContainer");
-var $dayPanel = $('#day-panel');
-
-var addDay = function() {
-  days.push(Day);
-
-  $("#daysContainer").append("<button data-num= '" + Day.number + "' class='btn btn-success' id='days" + Day.number + "'>Day " + Day.number + "</button>");
-
-  $("#dayBtn" + Day.number).on('click',function() {
-      $("#dayBtn").addClass('active');
-      var dataNum = $(this).attr('data-num');
-      var now = days[dataNum-1];
-      app.currentDay = now;
-      rerender(now);
+  var data = new Data({
+    hotels:{{hotels | json}},
+    thingsToDo:{{thingsToDo | json}},
+    restaurants: {{restaurants | json}},
   });
-};
 
-//Putting in Day 1 here to start the user out
-addDay();
-// User can then add buttons using 'Add'
-  $("#dayBtn").on('click',function() {
+  {% endautoescape %}
+
+
+  var map;
+  var mapInit = function() {
+    // initialize new google maps LatLng object
+    var myLatlng = new google.maps.LatLng(40.705786,-74.007672);
+
+    // set the map options hash
+    var mapOptions = {
+      center: myLatlng,
+      zoom: 16,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+
+    // get the maps div's HTML obj
+    var map_canvas_obj = document.getElementById("map-canvas");
+
+    // initialize a new Google Map with the options
+    map = new google.maps.Map(map_canvas_obj, mapOptions);
+
+    // Add the marker to the map
+    // var marker = new google.maps.Marker({
+    //   position: myLatlng,
+    //   title:"Hello World!"
+    // });
+
+    // Add the marker to the map by calling setMap()
+    // marker.setMap(map);
+  }
+
+  mapInit();
+
+
+  var selectors = {
+    hotels: $("#hotel-select"),
+    thingsToDo: $("#thingsToDo-select"),
+    restaurants: $("#restaurants-select")
+  }
+
+  var days = [];
+  var currentDay;
+  var $daysContainer = $("#daysContainer");
+  var $dayPanel = $('#day-panel');
+
+  var arrToUl = function(arr) {
+    arr.forEach(function(el) {
+      var toReturn = (<ul>);
+      var count = null;
+      count += 1;
+      toReturn.append("<li + 'id=count' >" + el.name + "</li>" + "</ul>" + "<form 'action'='/add/submit' 'method'='post'>" + "<button 'class'='btn-warning' 'id'='count'>" + Remove + "</button>" + "</form>");
+    });
+    return toReturn
+  };
+
+  $('.btn-warning').on('click', function() {
+    var temp = $(this).attr("id");
+    $("li[id=temp]").hide;
+    $(this).hide;
+      // if ($('li').id === temp) {
+      // }
+      });
+  });
+
+  var Markers = new MarkerCollection();
+
+  var setMarkers = function(locations) {
+    locations.forEach(function(location) {
+      Markers.place(location);
+    });
+  };
+
+  var getLocationsForDay = function(day) {
+    var locations = [];
+    ['hotels','restaurants','thingsToDo'].forEach(function(type) {
+      day[type].forEach(function(activity) {
+        locations.push(activity.place[0].location);
+      });
+    });
+    return locations;
+  }
+
+  var DayPlanView = function(day) {
+    this.day = day;
+    this.render();
+  };
+
+  DayPlanView.prototype.render = function() {
+    var str = "<div><h3>Plan for day " + this.day.number + "</h3>";
+    str += "Hotels" + arrToUl(this.day.hotels);
+    str += "Restaurants" + arrToUl(this.day.restaurants);
+    str += "Things to do" + arrToUl(this.day.thingsToDo) + "</div>";
+    this.$el = $(str);
+  }
+
+  var DayButtonView = function(day) {
+    this.day = day;
+
+    this.$el = $("<button class='btn'>Day " + this.day.number + "</button>");
+
+    $daysContainer.append(this.$el);
+
+    var self = this;
+
+    this.$el.on('click',function() {
+      Markers.clearMap();
+      setMarkers(getLocationsForDay(self.day));
+      self.day.activate();
+      currentDay = self.day;
+    });
+  }
+
+  var Day = function() {
+    this.hotels = [];
+    this.restaurants = [];
+    this.thingsToDo = [];
+    this.number = days.length + 1;
+    this.buttonView = new DayButtonView(this);
+    this.dayPlanView = new DayPlanView(this);
+  };
+
+  Day.prototype.activate = function() {
+    currentDay = this;
+    this.dayPlanView.render();
+    $dayPanel.html(this.dayPlanView.$el);
+  }
+
+  Day.prototype.addActivity = function(type,id) {
+
+  };
+
+  var addDay = function() {
+    var dayObj = new Day();
+    days.push(dayObj);
+  }
+
+  addDay();
+
+  $("#addDay").on('click',function() {
     addDay();
   });
 
-//make add selector activities work
-$('.add-place').on('click', function(){
-  var place = (this).attr('data-place');
-// why do we need this line?
-  var selector = selectors[place];
-  //revisit what selector.val would be
-  var id = selector.val;
-  if (typeof(app.currentDay) != 'undefined') {
-    app.currentDay[place].push(findById(place, id));
-    Day.prototype.addActivity.push(findById(place, id));
+var attraction_id, attraction_type, current_day;
+
+  //adding things with places
+  $(".add-place").on('click',function() {
+    var place = $(this).attr('data-place');
+    var selector = selectors[place];
+    var id = selector.val();
+    if(typeof currentDay !== 'undefined') {
+      var activity = data.findById(place,id);
+      Markers.place(activity.place[0].location);
+      currentDay[place].push(activity);
+      currentDay.activate();
+      writeVisitToServer(attraction_id, attraction_type, current_day);
     }
-});
-
-// latlng = data.hotels[hotelNum].place.location[num1, num2];
-
-arrToUl = function (arr) {
-  var toReturn = "<ul>";
-  arr.forEach(function(el) {
-    toReturn += "<li>" + el + "</li>";
   });
-  return toReturn + "</ul>";
-};
 
-var getLocationsForDay = function(day) {
-    var locations = [];
-    ['hotels', 'thingsToDo', 'restaurants'].forEach(function(type) {
-      day[type].forEach(function(activity) {
-        locations.push(activity.place[0]location)
-        });
-    });
-    return locations
-}
 
-var maps;
 
-var setMarkers = function(locations) {
-//revisit: how does this line work?
-  locations.forEach(function(location) {
-    new google.maps.Marker({
-    position: new google.maps.LatLng(location[0], location[1])
-      }).setMap(map)
-  });
-};
+  var initSelectors = function() {
+    var optionFactory = function(obj) {
+      return "<option value='" + obj._id + "'>" + obj.name + "</option>";
+    };
 
-var rerender = function (Day){
-  var str = "<h3>Plan for day " + Day.number + "</h3>";
-  str += "hotels" + arrToUl(Day.hotels);
-  str += "thingsToDo" + arrToUl(Day.thingsToDo);
-  str += "restaurants" + arrToUl(Day.restaurants);
-  $('#daypanel').html(str);
-  $('#map-canvas').initialize_gmaps();
-  setMarkers(getLocationsForDay());
-};
-$('#days').on('click', function () {
-  rerender(Day.currentDay);
-});
+    var selectAppender = function($select,obj) {
+      $select.append(optionFactory(obj))
+    };
 
-//making menus work------------------------------
-
-var initSelectors = function() {
-  var optionFactory = function(obj) {
-    return "<option value='" + obj._id + "'>" + obj.name + "</option>";
-  };
-
-  var selectAppender = function($select, obj) {
-    $select.append(optionFactory(obj));
-  };
-
-  for(var type in data) {
-    if(data.hasOwnProperty(type)) {
-      data[type].forEach(function(obj) {
-        selectAppender(selectors[type],obj);
-      });
+    for(var type in data) {
+      if(data.hasOwnProperty(type)) {
+        data[type].forEach(function(obj) {
+          selectAppender(selectors[type],obj);
+        })
+      }
     }
-  }
-};
-
-initSelectors();
-
-// GOOGLE MAPS CODE ------------------------------------------------//
-
-function initialize_gmaps() {
-  // initialize new google maps LatLng object
-  var myLatlng = new google.maps.LatLng(40.705786,-74.007672);
-  // set the map options hash
-  var mapOptions = {
-    center: myLatlng,
-    zoom: 16,
-    mapTypeId: google.maps.MapTypeId.ROADMAP
   };
-  // get the maps div's HTML obj
-  var map_canvas_obj = document.getElementById("map-canvas");
-  // initialize a new Google Map with the options
-  var map = new google.maps.Map(map_canvas_obj, mapOptions);
-  // Add the marker to the map
-  // var marker = new google.maps.Marker({
-  //   position: LatLng,
-  //   title:"Look here"
-  // });
-  // // Add the marker to the map by calling setMap()
-  // marker.setMap(map);
+
+  initSelectors();
+
+//_____________WRITE VISIT TO SERVER____________
+
+function writeVisitToServer(attraction_id, current_day, type_of_place) {
+  var post_data = {
+    attraction_id: attraction_id,
+    attraction_type: type_of_place,
+    day_number: current_day
+  };
+
+  // the callback function below will be called if this request completes successfully.
+  // the server's response to this request is passed into this callback function as "responseData"
+
+  var post_callback = function (responseData) {
+  };
+
+  // jQuery Ajax call
+  $.post("/visit/create", post_data, post_callback);
+
 }
-
-$(document).ready(function() {
-  initialize_gmaps();
-});
-
-</script>
+  </script>
 {% endblock %}
-
