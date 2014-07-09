@@ -32,29 +32,35 @@ router.get('/', [
 //
 router.get('/day/:day', function(req, res) {
   models.Visit.find({day_number: req.params.day}, function(err, visits) {
-    ////
-    async.map(visits,
-      function (visit, callback) {
-        visit.populate({
-          path: '_attraction',
-          match: {_id: visit._attraction} ,
-          model: visit.attraction_type
-        }, function(err, popVisit) {
-            console.log(popVisit);
-            callback(null,popVisit);
-            }
-        },
-        function(err,vistis) {
-          //visits at this point will be populated
-          res.json(visits);
-        });
-      });
+    var transformer = function (visit, callback) {
+      visit.populate({
+        path: '_attraction',
+        match: {_id: visit._attraction} ,
+        model: visit.attraction_type
+      }, callback );
+    };
 
+    var masterCallback = function(err,vistis) {
+      //visits at this point will be populated
+      res.json(visits);
+    };
+
+    async.map(visits, transformer, masterCallback);
   });
 });
 
 
-
-
+router.get('/data', function(req, res) {
+    models.Hotels.find(function(err,hotels) {
+      models.ThingsToDo.find(function(err,thingsToDo) {
+        models.Restaurants.find(function(err,restaurants) {
+          res.json({
+            thingsToDo: thingsToDo,
+            restaurants: restaurants,
+            hotels: hotels});
+          });
+        });
+      });
+    });
 
 module.exports = router;

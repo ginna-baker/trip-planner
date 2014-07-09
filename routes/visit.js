@@ -23,9 +23,9 @@ router.post('/create', function(req, res) {
   });
 });
 
-router.post('/delete', function(req, res)
-  remove(req);
-  )
+// router.post('/delete', function(req, res)
+//   remove(req);
+//   )
 
 //ADD ROUTE-------------------------------------------
 // router.get('/', function(req, res) {
